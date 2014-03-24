@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -148,7 +150,9 @@ public class MainActivity extends ListActivity {
 
     private void writeToFile(String data) {
         try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("config.txt", Context.MODE_PRIVATE));
+            File myFile = new File("/sdcard/contacts.nin");
+            myFile.createNewFile();
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(myFile));
             outputStreamWriter.write(data);
             outputStreamWriter.close();
         }
