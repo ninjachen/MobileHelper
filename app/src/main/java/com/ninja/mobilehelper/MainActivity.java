@@ -3,10 +3,10 @@ package com.ninja.mobilehelper;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +26,7 @@ public class MainActivity extends ListActivity {
     final static int FILE_SELECT_CODE = 6333;
     final static String TAG = "ninjaTest";
 
-    ArrayList<String> contactsList;
+    ArrayList<MyContact> contactsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,21 +39,22 @@ public class MainActivity extends ListActivity {
         Cursor curContacts = getContentResolver().query(contactsUri, proj1, null, null, null);
 
         //declare a ArrayList object to store the data that will present to the user
-        contactsList = new ArrayList<String>();
-        String allPhoneNo = "";
+        contactsList = new ArrayList<MyContact>();
+        MyContact myContact ;
         if (curContacts.getCount() > 0) {
             while (curContacts.moveToNext()) {
                 // get all the phone numbers if exist
                 if (curContacts.getInt(1) > 0) {
-                    allPhoneNo = getAllPhoneNumbers(curContacts.getString(2));
+                    //0:DISPLAY_NAME,2:LOOKUP_KEY
+                    myContact = initContact(curContacts.getString(0), curContacts.getString(2));
+                    contactsList.add(myContact);
                 }
-                contactsList.add(curContacts.getString(0) + " , " + allPhoneNo);
-                allPhoneNo = "";
+                myContact = null;
             }
         }
 
         // binding the data to ListView
-        setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, contactsList));
+        setListAdapter(new ArrayAdapter<MyContact>(this, android.R.layout.simple_list_item_1, contactsList));
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
 
@@ -100,8 +101,12 @@ public class MainActivity extends ListActivity {
         return true;
     }
 
-    public boolean import_contacts() {
+    public boolean import_contacts(ArrayList<MyContact> contactList) {
         //todo
+        boolean isOK = addContact(contactList);
+        if(isOK){
+            Toast.makeText(this, "import success", Toast.LENGTH_SHORT).show();
+        }
         return true;
     }
 
@@ -123,22 +128,23 @@ public class MainActivity extends ListActivity {
                 && requestCode == FILE_SELECT_CODE) {
             // Get the Uri of the selected file
             Uri uri = data.getData();
-            String url = uri.toString();
-
+            ContentResolver cr = getContentResolver();
             String contacts = null;
             try {
-                contacts = readFile(url);
-            } catch (IOException e) {
+                InputStream is = cr.openInputStream(uri);
+                contacts = readFile(is);
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+//            String url = uri.toString();
             Gson gson = new Gson();
-            ArrayList<String> contactList = gson.fromJson(contacts, ArrayList.class);
+            ArrayList<MyContact> contactList = gson.fromJson(contacts, ArrayList.class);
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure " + contactList.size() +" contacts will be import?")
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            import_contacts();
+                            import_contacts(contactList);
                         }
                     })
                     .setNegativeButton("No", null)
@@ -155,8 +161,10 @@ public class MainActivity extends ListActivity {
      * @param lookUp_Key lookUp key for a specific contact
      * @return a string containing all the phone numbers
      */
-    public String getAllPhoneNumbers(String lookUp_Key) {
-        String allPhoneNo = "";
+    public MyContact initContact(String name, String lookUp_Key) {
+        MyContact myContact = new MyContact();
+        myContact.setName(name);
+//        List<> allPhoneNo = "";
 
         // Phone info are stored in the ContactsContract.Data table
         Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -166,10 +174,10 @@ public class MainActivity extends ListActivity {
         String[] selectionArgs = {lookUp_Key};
         Cursor cur = getContentResolver().query(phoneUri, proj2, selection, selectionArgs, null);
         while (cur.moveToNext()) {
-            allPhoneNo += cur.getString(0) + " ";
+            myContact.getPhoneNumbers().add(cur.getString(0));
         }
 
-        return allPhoneNo;
+        return myContact;
     }
 
     private void writeToFile(String data) {
@@ -186,10 +194,10 @@ public class MainActivity extends ListActivity {
     }
 
     //读SD中的文件
-    public String readFile(String filePath) throws IOException{
+    public String readFile(InputStream fin){
         String res="";
         try{
-            FileInputStream fin = new FileInputStream(filePath);
+//            FileInputStream fin = new FileInputStream(filePath);
 
             int length = fin.available();
 
@@ -205,5 +213,42 @@ public class MainActivity extends ListActivity {
             e.printStackTrace();
         }
         return res;
+    }
+
+    public boolean addContact(MyContact contact){
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        int rawContactInsertIndex = ops.size();
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
+        ops.add(ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, contact.getName()) // Name of the person
+                .build());
+        ops.add(ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(
+                        ContactsContract.Data.RAW_CONTACT_ID,   rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, contact.getFirstPhoneNumber()) // Number of the person
+                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build()); // Type of mobile number
+        try
+        {
+            ContentProviderResult[] res = getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            return true;
+        }
+        catch (RemoteException e)
+        {
+            // error
+            return false;
+        }
+        catch (OperationApplicationException e)
+        {
+            // error
+            return false;
+        }
     }
 }

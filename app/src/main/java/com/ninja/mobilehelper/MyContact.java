@@ -1,5 +1,6 @@
 package com.ninja.mobilehelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,15 +8,25 @@ import java.util.List;
  * Contact Model
  */
 public class MyContact {
+
+    MyContact(){
+        phoneNumbers = new ArrayList<String>();
+    }
+
     private String name;
     private List<String> phoneNumbers;
-
     public String getName() {
         return name;
     }
 
     public List<String> getPhoneNumbers() {
         return phoneNumbers;
+    }
+
+    public String getFirstPhoneNumber() {
+        if(phoneNumbers != null && phoneNumbers.size()>0)
+            return phoneNumbers.get(0);
+        return "-999999999";
     }
 
     public void setName(String name) {
