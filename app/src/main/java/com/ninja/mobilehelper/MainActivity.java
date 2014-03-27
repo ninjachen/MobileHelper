@@ -16,6 +16,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.google.gson.Gson;
+import opensource.jpinyin.ChineseHelper;
+import opensource.jpinyin.PinyinFormat;
+import opensource.jpinyin.PinyinHelper;
 import org.apache.http.util.EncodingUtils;
 
 import java.io.*;
@@ -103,11 +106,15 @@ public class MainActivity extends ListActivity {
 
     public boolean import_contacts(ArrayList<MyContact> contactList) {
         //todo
-        boolean isOK = addContact(contactList);
+        boolean isOK = true;
+        for(MyContact contact : contactList)
+            isOK &= addContact(contact);
+
         if(isOK){
             Toast.makeText(this, "import success", Toast.LENGTH_SHORT).show();
-        }
         return true;
+        }
+        return false;
     }
 
 
@@ -138,7 +145,7 @@ public class MainActivity extends ListActivity {
             }
 //            String url = uri.toString();
             Gson gson = new Gson();
-            ArrayList<MyContact> contactList = gson.fromJson(contacts, ArrayList.class);
+            final ArrayList<MyContact> contactList = gson.fromJson(contacts, ArrayList.class);
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure " + contactList.size() +" contacts will be import?")
                     .setCancelable(false)
@@ -156,6 +163,7 @@ public class MainActivity extends ListActivity {
     }
 
     /**
+     * init phone numbers and contact names.
      * Get all the phone numbers of a specific contact person
      *
      * @param lookUp_Key lookUp key for a specific contact
@@ -163,9 +171,16 @@ public class MainActivity extends ListActivity {
      */
     public MyContact initContact(String name, String lookUp_Key) {
         MyContact myContact = new MyContact();
+        //init name
+        if(name !=null && name.length() > 0){
+            if(ChineseHelper.isChinese(name.charAt(0))){
+                //if name is chinese,need to add pinyin to index,such as:小李-> xiaoli（小李）
+                name = PinyinHelper.convertToPinyinString(name, "", PinyinFormat.WITHOUT_TONE) + "(" + name + ")";
+            }
+        }
         myContact.setName(name);
-//        List<> allPhoneNo = "";
 
+        //init phone number
         // Phone info are stored in the ContactsContract.Data table
         Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] proj2 = {ContactsContract.CommonDataKinds.Phone.NUMBER};
