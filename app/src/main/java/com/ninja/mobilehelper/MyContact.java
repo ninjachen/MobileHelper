@@ -7,7 +7,7 @@ import java.util.List;
  * Created by ninja_chen on 14-3-13.
  * Contact Model
  */
-public class MyContact {
+public class MyContact implements Comparable {
 
     MyContact(){
         phoneNumbers = new ArrayList<String>();
@@ -35,6 +35,15 @@ public class MyContact {
 
     public void setPhoneNumbers(List<String> phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        if(!(another instanceof  MyContact) )
+            return -1;
+
+        MyContact other = (MyContact)another;
+        return this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
     }
 }
 

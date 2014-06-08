@@ -23,6 +23,7 @@ import org.apache.http.util.EncodingUtils;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends ListActivity {
 
@@ -56,8 +57,11 @@ public class MainActivity extends ListActivity {
             }
         }
 
+        //sort by the pinyin Name
+        Collections.sort(contactsList);
+
         // binding the data to ListView
-        setListAdapter(new ArrayAdapter<MyContact>(this, android.R.layout.simple_list_item_1, contactsList));
+        setListAdapter(new ContactAdapter(this, contactsList));
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
 
