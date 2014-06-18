@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MobileHelper.iml" filepath="$PROJECT_DIR$/MobileHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cardsui/cardsui.iml" filepath="$PROJECT_DIR$/cardsui/cardsui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Silk-master/silk.iml" filepath="$PROJECT_DIR$/Silk-master/silk.iml" />
     </modules>
   </component>
 </project>

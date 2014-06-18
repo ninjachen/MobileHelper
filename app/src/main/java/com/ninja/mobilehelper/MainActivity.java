@@ -12,9 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.*;
 import com.google.gson.Gson;
 import opensource.jpinyin.ChineseHelper;
 import opensource.jpinyin.PinyinFormat;
@@ -44,7 +43,7 @@ public class MainActivity extends ListActivity {
 
         //declare a ArrayList object to store the data that will present to the user
         contactsList = new ArrayList<MyContact>();
-        MyContact myContact ;
+        MyContact myContact;
         if (curContacts.getCount() > 0) {
             while (curContacts.moveToNext()) {
                 // get all the phone numbers if exist
@@ -64,11 +63,20 @@ public class MainActivity extends ListActivity {
         setListAdapter(new ContactAdapter(this, contactsList));
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    MyContact c = contactsList.get(position);
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + c.getPhoneNumbers().get(0)));
+                    startActivity(intent);
+                return false;
+            }
+        });
     }
 
 
-    @Override
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
