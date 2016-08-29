@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?><!--@aunthor qin--><!-- 拼音首字母和 listview 联动的listview 的item-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+
+    <!--<ImageView-->
+        <!--android:id="@+id/de_ui_friend_icon"-->
+        <!--android:layout_width="40dp"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--android:layout_margin="10dp"-->
+        <!--android:layout_centerVertical="true" />-->
+
+    <TextView
+        android:id="@+id/de_ui_friend_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂无昵称暂无昵称暂无昵称暂无昵称暂无昵称暂无昵称暂无昵称"
+        android:singleLine="true"
+        android:maxLength="12"
+        android:layout_centerVertical="true"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@android:id/text2"
+        android:layout_alignLeft="@+id/de_ui_friend_name"
+        android:visibility="gone"
+        android:layout_below="@+id/de_ui_friend_name"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif"
+        android:singleLine="true"
+        android:text="Matches Other Field" />
+
+    <!--ic_man -->
+    <!--<ImageView-->
+        <!--android:id="@+id/common_ic_gendor"-->
+        <!--android:layout_width="20dp"-->
+        <!--android:layout_height="20dp"-->
+        <!--android:layout_toRightOf="@+id/de_ui_friend_name"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginLeft="5dp"-->
+        <!--android:layout_marginRight="2dp" />-->
+
+    <!--<View-->
+        <!--android:id="@+id/common_divider_center"-->
+        <!--android:layout_width="2dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_marginTop="22dp"-->
+        <!--android:layout_marginBottom="22dp"-->
+        <!--android:background="@color/group_list_gray"-->
+        <!--android:layout_toRightOf="@+id/common_ic_gendor"></View>-->
+
+    <!--android:src="@drawable/user_certed"-->
+    <!--<ImageView-->
+        <!--android:id="@+id/common_ic_idinfo"-->
+        <!--android:layout_width="20dp"-->
+        <!--android:layout_height="20dp"-->
+        <!--android:layout_toRightOf="@+id/common_divider_center"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginLeft="2dp" />-->
+
+    <!--android:src="@drawable/user_certed"-->
+    <!--<TextView-->
+        <!--android:id="@+id/common_text_idinfo"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_toRightOf="@+id/common_ic_idinfo"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginLeft="5dp"-->
+        <!--android:text="专家"-->
+        <!--android:singleLine="true" />-->
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/group_list_gray"
+        android:layout_alignParentBottom="true"
+
+        ></View>
+
+    <!--防止出错的地方没啥子用-->
+    <!--<TextView-->
+        <!--android:id="@+id/de_unread_num"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:layout_marginRight="24dp"-->
+        <!--android:clickable="false"-->
+        <!--android:focusable="false"-->
+        <!--android:focusableInTouchMode="false"-->
+        <!--android:gravity="center"-->
+        <!--android:text="9"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_height="20dp"-->
+        <!--android:layout_width="20dp"-->
+        <!--/>-->
+
+    <!---->
+    <!--<TextView-->
+        <!--android:id="@+id/de_unread_num"-->
+        <!--style="@style/DemoAddressNewMassage"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:layout_marginRight="24dp"-->
+        <!--android:clickable="false"-->
+        <!--android:focusable="false"-->
+        <!--android:focusableInTouchMode="false"-->
+        <!--android:gravity="center"-->
+        <!--android:text="9"-->
+        <!--android:textColor="@color/main_regist"-->
+        <!--android:visibility="gone" />-->
+
+
+</RelativeLayout>
+
+

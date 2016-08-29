@@ -18,7 +18,6 @@ import butterknife.OnClick;
 import timber.log.Timber;
 
 import static com.ninja.mobilehelper.R.id.clear_all_SMS_text;
-import static com.ninja.mobilehelper.R.id.contact_list_text;
 
 /**
  * Created by ninja on 8/29/16.
@@ -26,7 +25,7 @@ import static com.ninja.mobilehelper.R.id.contact_list_text;
 
 public class RouteActivity extends Activity {
 
-    @Bind(contact_list_text)
+    @Bind(R.id.contact_list_text)
     TextView contactListText;
 
     @Bind(clear_all_SMS_text)
@@ -40,13 +39,18 @@ public class RouteActivity extends Activity {
         cleatAllSMSText.setVisibility(View.VISIBLE);
     }
 
-    @OnClick(contact_list_text)
+    @OnClick(R.id.contact_list_text)
     public void onClickContactlist(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+    @OnClick(R.id.contact_list_text1)
+    public void onClickContactlist1(View view) {
+        Intent intent = new Intent(this, ContactListActivity.class);
+        startActivity(intent);
+    }
 
-    @OnClick(clear_all_SMS_text)
+    @OnClick(R.id.clear_all_SMS_text)
     public void onClickClearAllSMS(View view) {
         clearAllSMS();
 //        Toaster.showShort(this, "finish delete sms");

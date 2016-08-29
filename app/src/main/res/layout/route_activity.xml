@@ -13,6 +13,14 @@
         android:layout_marginTop="@dimen/margin_huge"
         android:text="Contact List"/>
     <TextView
+        android:id="@+id/contact_list_text1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_large"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_huge"
+        android:text="Contact List New"/>
+    <TextView
         android:id="@+id/clear_all_SMS_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

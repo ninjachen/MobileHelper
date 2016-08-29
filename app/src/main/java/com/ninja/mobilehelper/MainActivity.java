@@ -35,27 +35,7 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Uri contactsUri = ContactsContract.Contacts.CONTENT_URI;
-        String[] proj1 = new String[]{ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.Contacts.HAS_PHONE_NUMBER,
-                ContactsContract.Contacts.LOOKUP_KEY};
-        Cursor curContacts = getContentResolver().query(contactsUri, proj1, null, null, null);
-
-        //declare a ArrayList object to store the data that will present to the user
-        contactsList = new ArrayList<MyContact>();
-        MyContact myContact;
-        if (curContacts.getCount() > 0) {
-            while (curContacts.moveToNext()) {
-                // get all the phone numbers if exist
-                if (curContacts.getInt(1) > 0) {
-                    //0:DISPLAY_NAME,2:LOOKUP_KEY
-                    myContact = initContact(curContacts.getString(0), curContacts.getString(2));
-                    contactsList.add(myContact);
-                }
-                myContact = null;
-            }
-        }
+        contactsList = getContacts();
 
         //sort by the pinyin Name
         Collections.sort(contactsList);
@@ -87,8 +67,33 @@ public class MainActivity extends ListActivity {
         });
     }
 
+    private ArrayList<MyContact> getContacts() {
+        Uri contactsUri = ContactsContract.Contacts.CONTENT_URI;
+        String[] proj1 = new String[]{ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts.HAS_PHONE_NUMBER,
+                ContactsContract.Contacts.LOOKUP_KEY};
+        Cursor curContacts = getContentResolver().query(contactsUri, proj1, null, null, null);
 
-        @Override
+        //declare a ArrayList object to store the data that will present to the user
+        ArrayList contactsList = new ArrayList<>();
+        MyContact myContact;
+        if (curContacts.getCount() > 0) {
+            //0:DISPLAY_NAME,2:LOOKUP_KEY
+            int DISPLAY_NAME = 0;
+            int LOOKUP_KEY = 2;
+            while (curContacts.moveToNext()) {
+                // get all the phone numbers if exist
+                if (curContacts.getInt(1) > 0) {
+                    myContact = initContact(curContacts.getString(DISPLAY_NAME), curContacts.getString(LOOKUP_KEY), this);
+                    contactsList.add(myContact);
+                }
+            }
+        }
+        return  contactsList;
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -193,7 +198,7 @@ public class MainActivity extends ListActivity {
      * @param lookUp_Key lookUp key for a specific contact
      * @return a string containing all the phone numbers
      */
-    public MyContact initContact(String name, String lookUp_Key) {
+    public static MyContact initContact(String name, String lookUp_Key, Activity activity) {
         MyContact myContact = new MyContact();
         myContact.setName(name);
         //init pinyin
@@ -209,7 +214,7 @@ public class MainActivity extends ListActivity {
         // using lookUp key to search the phone numbers
         String selection = ContactsContract.Data.LOOKUP_KEY + "=?";
         String[] selectionArgs = {lookUp_Key};
-        Cursor cur = getContentResolver().query(phoneUri, proj2, selection, selectionArgs, null);
+        Cursor cur = activity.getContentResolver().query(phoneUri, proj2, selection, selectionArgs, null);
         while (cur.moveToNext()) {
             myContact.getPhoneNumbers().add(cur.getString(0));
         }
