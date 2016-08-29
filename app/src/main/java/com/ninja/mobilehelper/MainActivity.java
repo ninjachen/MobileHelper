@@ -1,24 +1,25 @@
 package com.ninja.mobilehelper;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.*;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+
 import com.google.gson.Gson;
-import opensource.jpinyin.ChineseHelper;
-import opensource.jpinyin.PinyinFormat;
-import opensource.jpinyin.PinyinHelper;
-import org.apache.http.util.EncodingUtils;
+import com.ninja.mobilehelper.entity.MyContact;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.Collections;
 public class MainActivity extends ListActivity {
 
     final static int FILE_SELECT_CODE = 6333;
-    final static String TAG = "ninjaTest";
+    final static String TAG = MainActivity.class.getSimpleName();
 
     ArrayList<MyContact> contactsList;
 
@@ -67,9 +68,20 @@ public class MainActivity extends ListActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    MyContact c = contactsList.get(position);
-                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + c.getPhoneNumbers().get(0)));
+                MyContact c = contactsList.get(position);
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + c.getPhoneNumbers().get(0)));
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return false;
+                }else {
                     startActivity(intent);
+                }
                 return false;
             }
         });
@@ -183,15 +195,13 @@ public class MainActivity extends ListActivity {
      */
     public MyContact initContact(String name, String lookUp_Key) {
         MyContact myContact = new MyContact();
-        //init name
+        myContact.setName(name);
+        //init pinyin
         if(name !=null && name.length() > 0){
-            if(ChineseHelper.isChinese(name.charAt(0))){
-                //if name is chinese,need to add pinyin to index,such as:小李-> xiaoli（小李）
-                name = PinyinHelper.convertToPinyinString(name, "", PinyinFormat.WITHOUT_TONE) + "(" + name + ")";
+            if(PinyinHelper.isHanzi(name)){
+                myContact.setPinyin(PinyinHelper.getInstance().getPinyins(name, ""));
             }
         }
-        myContact.setName(name);
-
         //init phone number
         // Phone info are stored in the ContactsContract.Data table
         Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -231,7 +241,7 @@ public class MainActivity extends ListActivity {
             byte [] buffer = new byte[length];
             fin.read(buffer);
 
-            res = EncodingUtils.getString(buffer, "UTF-8");
+//            res = EncodingUtils.getString(buffer, "UTF-8");
 
             fin.close();
         }
